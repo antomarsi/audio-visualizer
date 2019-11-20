@@ -5,18 +5,16 @@ import time
 import pygame
 from pygame.locals import *
 
-CHUNK = 4096
+CHUNK = 128
 RATE = 16000
 WIDTH = 420
 HEIGHT = 360
 WAVE_HEIGHT_MULTIPLIER = 1
-FPS = 60
 
 pygame.font.init()
 
 FPS_FONT = pygame.font.SysFont("Verdana", 20)
 GOLDENROD = pygame.Color("goldenrod")
-
 
 
 def get_freq_realtive_range(freq, multiplier=1, max_amp=2**16/2, min_amp=-2**16/2):
@@ -36,11 +34,13 @@ def main():
     pygame.init()
     clock = pygame.time.Clock()
     scrsize = (WIDTH, HEIGHT)
-    screen = pygame.display.set_mode(scrsize, HWSURFACE)
+    screen = pygame.display.set_mode(
+        scrsize, HWSURFACE | DOUBLEBUF | RESIZABLE)
     # visualizer animation starts here
     running = True
     delta_time = 0
     show_fps = False
+    samples = 0
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -50,11 +50,11 @@ def main():
                     running = False
                 elif event.key == pygame.K_f:
                     show_fps = not show_fps
+            if event.type == pygame.VIDEORESIZE:
+                scrsize = (event.w, event.h)
+                screen = pygame.display.set_mode(
+                    scrsize, HWSURFACE | DOUBLEBUF | RESIZABLE)
         samples = int(delta_time * RATE)
-        count = 0
-        while count < samples:
-            stream.read(CHUNK)
-            count += CHUNK
         data = np.frombuffer(stream.read(CHUNK), dtype=np.int16)
         x_unit = scrsize[0] / (CHUNK-1)
         screen.fill([0, 0, 0])
@@ -68,7 +68,6 @@ def main():
         if show_fps:
             draw_fps(screen, clock)
         pygame.display.flip()
-        delta_time = clock.tick(FPS)/1000
     stream.stop_stream()
     stream.close()
     p.terminate()
