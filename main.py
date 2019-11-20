@@ -5,8 +5,8 @@ import time
 import pygame
 from pygame.locals import *
 
-CHUNK = 32
-RATE = 44100
+CHUNK = 4096
+RATE = 16000
 WIDTH = 420
 HEIGHT = 360
 WAVE_HEIGHT_MULTIPLIER = 1
@@ -33,14 +33,14 @@ def main():
     p = pyaudio.PyAudio()
     stream = p.open(format=pyaudio.paInt16, channels=1, rate=int(RATE),
                     input=True, frames_per_buffer=CHUNK)
-    clock = pygame.time.Clock()
     pygame.init()
+    clock = pygame.time.Clock()
     scrsize = (WIDTH, HEIGHT)
-    screen = pygame.display.set_mode(scrsize, HWSURFACE | DOUBLEBUF)
+    screen = pygame.display.set_mode(scrsize, HWSURFACE)
     # visualizer animation starts here
     running = True
     delta_time = 0
-    show_fps = True
+    show_fps = False
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -55,7 +55,7 @@ def main():
         while count < samples:
             stream.read(CHUNK)
             count += CHUNK
-        data = np.fromstring(stream.read(CHUNK), dtype=np.int16)
+        data = np.frombuffer(stream.read(CHUNK), dtype=np.int16)
         x_unit = scrsize[0] / (CHUNK-1)
         screen.fill([0, 0, 0])
         points = []
@@ -64,6 +64,7 @@ def main():
             pointX = int(index*x_unit)
             pointY = int(scrsize[1] * (value/100))
             points.append([pointX, pointY])
+        print(len(points))
         pygame.draw.lines(screen, [0, 255, 0], False, points, 1)
         if show_fps:
             draw_fps(screen, clock)

@@ -1,5 +1,3 @@
 pygame
 numpy
 pyaudio
-python-dotenv
-spotipy
