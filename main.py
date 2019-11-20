@@ -10,11 +10,13 @@ RATE = 16000
 WIDTH = 420
 HEIGHT = 360
 WAVE_HEIGHT_MULTIPLIER = 1
+TITLE = "Video Visualizer by antomarsi"
 
 pygame.font.init()
-
+pygame.display.set_caption('test caption')
 FPS_FONT = pygame.font.SysFont("Verdana", 20)
 GOLDENROD = pygame.Color("goldenrod")
+MODE = HWSURFACE | DOUBLEBUF | RESIZABLE
 
 
 def get_freq_realtive_range(freq, multiplier=1, max_amp=2**16/2, min_amp=-2**16/2):
@@ -32,10 +34,11 @@ def main():
     stream = p.open(format=pyaudio.paInt16, channels=1, rate=int(RATE),
                     input=True, frames_per_buffer=CHUNK)
     pygame.init()
+    pygame.display.set_caption(TITLE)
     clock = pygame.time.Clock()
     scrsize = (WIDTH, HEIGHT)
     screen = pygame.display.set_mode(
-        scrsize, HWSURFACE | DOUBLEBUF | RESIZABLE)
+        scrsize, MODE)
     # visualizer animation starts here
     running = True
     delta_time = 0
@@ -53,7 +56,8 @@ def main():
             if event.type == pygame.VIDEORESIZE:
                 scrsize = (event.w, event.h)
                 screen = pygame.display.set_mode(
-                    scrsize, HWSURFACE | DOUBLEBUF | RESIZABLE)
+                    scrsize, MODE)
+                pygame.display.set_caption(TITLE)
         samples = int(delta_time * RATE)
         data = np.frombuffer(stream.read(CHUNK), dtype=np.int16)
         x_unit = scrsize[0] / (CHUNK-1)

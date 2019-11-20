@@ -22,15 +22,12 @@ If you have a Linux Distro, you will need to donwload the package `portaudio19-d
 
 ### Know Problems
 
-- It's not possible to resize or make the window dinamyc
+- There's a bug when resizing the screen
+- I'ts not working with a defined FPS
 
 ```
 Give an example
 ```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
 
 ## Built With
 
