@@ -64,7 +64,6 @@ def main():
             pointX = int(index*x_unit)
             pointY = int(scrsize[1] * (value/100))
             points.append([pointX, pointY])
-        print(len(points))
         pygame.draw.lines(screen, [0, 255, 0], False, points, 1)
         if show_fps:
             draw_fps(screen, clock)
